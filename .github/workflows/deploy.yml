@@ -1,0 +1,62 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+# Kebenaran yang diperlukan untuk deploy ke GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Elakkan deployment bertindih
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 2. Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 3. Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: 4. Build project
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          npm run build
+          # Salin index.html kepada 404.html untuk sokongan fallback SPA di GitHub Pages
+          cp dist/index.html dist/404.html
+
+      - name: 5. Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: 6. Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: 7. Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

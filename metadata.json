@@ -1,0 +1,6 @@
+{
+  "name": "Dashboard Pengurusan Pelan",
+  "description": "Paparan Prestasi, Kemajuan dan Status Pelaksanaan Pelan Pengurusan Organisasi & Sektor Awam Bersepadu Google Sheets",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
